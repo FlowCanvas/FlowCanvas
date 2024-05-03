@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-public class Encrypt {
+public class Encrypt { 
 
     public static String generateHash(char[] data) {
         try {

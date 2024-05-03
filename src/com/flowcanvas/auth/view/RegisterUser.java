@@ -31,7 +31,7 @@ public class RegisterUser extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegisterUser() {
-		this.usersDao = new UsersDao();
+		this.usersDao = new UsersDao(); 
 		
 		setFont(new Font("D2Coding", Font.PLAIN, 12));
 		setTitle("회원 가입");

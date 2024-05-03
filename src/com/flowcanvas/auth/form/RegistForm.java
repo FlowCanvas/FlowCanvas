@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class RegistForm {
-	String email;
+	String email; 
 	String password;
 	String nickName;
 }

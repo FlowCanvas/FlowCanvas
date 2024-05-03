@@ -14,7 +14,7 @@ import com.flowcanvas.common.db.DBConnection;
 
 import oracle.jdbc.OracleTypes;
 
-public class UsersDao {
+public class UsersDao { 
 
     private ResultSet rs;
 
