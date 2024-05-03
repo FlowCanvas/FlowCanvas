@@ -22,7 +22,7 @@ public class UsersDao {
     public String insUsers(RegistForm users) {
         // try-with-resources
         try (Connection conn = DBConnection.getConnection();
-                CallableStatement cs = conn.prepareCall("{call USERS_CURD_PACK.INS_USERS(?, ?, ?)}")) {
+                CallableStatement cs = conn.prepareCall("{call USERS_CRUD_PACK.INS_USERS(?, ?, ?)}")) {
 
             cs.setString(1, users.getEmail());
             cs.setString(2, users.getPassword());
@@ -48,7 +48,7 @@ public class UsersDao {
     // 로그인 시 이메일, 비밀번호 유효성 검사
     public void verifyLoginUser(LoginForm loginForm) {
         try (Connection conn = DBConnection.getConnection();
-                CallableStatement cs = conn.prepareCall("{call USERS_CURD_PACK.VERIFY_LOGIN_USER(?, ?, ?, ?)}")) {
+                CallableStatement cs = conn.prepareCall("{call USERS_CRUD_PACK.VERIFY_LOGIN_USER(?, ?, ?, ?)}")) {
 
             cs.setString(1,loginForm.getEmail());
             cs.setString(2, loginForm.getPassword());
