@@ -308,18 +308,10 @@ public class KanbanBoard {
 	// 프로젝트 삭제
 	private void delProject(ProjectsDto projectsDto) {
 		
-	    int checkDelMessage = 
-	    		JOptionPane.showConfirmDialog(frame, "프로젝트를 삭제하시겠습니까?", "삭제 확인", 
-	    				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-	    if (checkDelMessage == JOptionPane.YES_OPTION) {
-	    	
-	        projectDao.delProject(projectsDto.getProjectId());
-	        // 프로젝트 리스트 조회
-	        selProjects();
-	        
-	        JOptionPane.showMessageDialog(frame, "프로젝트가 삭제되었습니다.", "삭제 완료", JOptionPane.INFORMATION_MESSAGE);
-	    }
+		projectDao.delProject(projectsDto.getProjectId());
+		
+		// 프로젝트 리스트 조회
+		selProjects();
 	}
 	
 	
