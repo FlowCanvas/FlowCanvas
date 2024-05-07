@@ -19,51 +19,52 @@ import com.flowcanvas.kanban.model.dto.ProjectsDto;
 public class ButtonListRenderer extends JPanel implements ListCellRenderer<ProjectsDto> {
 
 	private static final long serialVersionUID = 8487586180791578031L;
-
+	
 	private JLabel lbl_project_name;
-	private JButton btn_modify_project;
-	// 리스트 row 테두리
-	private Border listBorder;
-	// 리스트 row 마진
-	private Border listMargin;
-	// 테두리, 마진 결합
-	private Border combineBorder;
+    private JButton btn_modify_project;
+    // 리스트 row 테두리
+    private Border listBorder;
+    // 리스트 row 마진
+    private Border listMargin;
+    // 테두리, 마진 결합
+    private Border combineBorder;
 
-	
-	public ButtonListRenderer() {
+    
+    public ButtonListRenderer() {
+    	
+        setLayout(new BorderLayout());
+        
+        lbl_project_name = new JLabel();
+        btn_modify_project = new JButton("···");
+        
+        add(lbl_project_name, BorderLayout.CENTER);
+        add(btn_modify_project, BorderLayout.EAST);
+        
+        
+        listBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY);
+        listMargin = new EmptyBorder(5, 0, 5, 5);
+        combineBorder= new CompoundBorder(listBorder, listMargin);
+    }
 
-		setLayout(new BorderLayout());
+    
+    @Override
+    public Component getListCellRendererComponent(
+    		JList<? extends ProjectsDto> listProjectDto, ProjectsDto projectDto, int index, boolean isSelected, boolean cellHasFocus) {
+    	
+    	// 리스트에 보여줄 텍스트
+    	lbl_project_name.setText(projectDto.getProjectName());
+    	
+        if (isSelected) {
+            setBackground(listProjectDto.getSelectionBackground());
+            lbl_project_name.setForeground(listProjectDto.getSelectionForeground());
+        } else {
+            setBackground(listProjectDto.getBackground());
+            lbl_project_name.setForeground(listProjectDto.getForeground());
+        }
+        
+        // 테두리, 마진 결합 세팅
+        setBorder(combineBorder);
 
-		lbl_project_name = new JLabel();
-		btn_modify_project = new JButton("···");
-
-		add(lbl_project_name, BorderLayout.CENTER);
-		add(btn_modify_project, BorderLayout.EAST);
-
-		listBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY);
-		listMargin = new EmptyBorder(5, 0, 5, 5);
-		combineBorder = new CompoundBorder(listBorder, listMargin);
-	}
-
-	
-	@Override
-	public Component getListCellRendererComponent(JList<? extends ProjectsDto> listProjectDto, ProjectsDto projectDto,
-			int index, boolean isSelected, boolean cellHasFocus) {
-
-		// 리스트에 보여줄 텍스트
-		lbl_project_name.setText(projectDto.getProjectName());
-
-		if (isSelected) {
-			setBackground(listProjectDto.getSelectionBackground());
-			lbl_project_name.setForeground(listProjectDto.getSelectionForeground());
-		} else {
-			setBackground(listProjectDto.getBackground());
-			lbl_project_name.setForeground(listProjectDto.getForeground());
-		}
-
-		// 테두리, 마진 결합 세팅
-		setBorder(combineBorder);
-
-		return this;
-	}
+        return this;
+    }
 }
