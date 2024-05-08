@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.flowcanvas.auth.dao.UsersDao;
-import com.flowcanvas.auth.form.RegistForm;
+import com.flowcanvas.auth.model.form.RegistForm;
 import com.flowcanvas.common.encrypt.Encrypt;
 
 import javax.swing.JPasswordField;

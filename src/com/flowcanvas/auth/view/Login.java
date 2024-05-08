@@ -15,49 +15,51 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import com.flowcanvas.auth.dao.UsersDao;
-import com.flowcanvas.auth.form.LoginForm;
+import com.flowcanvas.auth.model.dto.UsersDto;
+import com.flowcanvas.auth.model.form.LoginForm;
 import com.flowcanvas.common.encrypt.Encrypt;
+import com.flowcanvas.kanban.view.KanbanBoard;
 
-public class Login {
-
-	private JFrame frmFlowkanban;
+public class Login extends JFrame {
+	
 	private JTextField txt_login_email;
 
 	private UsersDao usersDao;
 	private JPasswordField txt_login_password;
+	private UsersDto usersDto;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() { 
-			public void run() {
-				try {
-					Login window = new Login();
-					window.frmFlowkanban.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	        public void run() {
+	            try {
+	                Login login = new Login();
+	                login.setVisible(true);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    });
 	}
 
 	// 초기화
 	public Login() {
+		this.usersDao = new UsersDao();
+		
+		
 		initialize();
 	}
 
 	private void initialize() {
-		this.usersDao = new UsersDao();
-
-		frmFlowkanban = new JFrame();
-		frmFlowkanban.setFont(new Font("D2Coding", Font.PLAIN, 12));
-		frmFlowkanban.setTitle("로그인");
-		frmFlowkanban.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmFlowkanban.setBounds(100, 100, 480, 161);
+		setFont(new Font("D2Coding", Font.PLAIN, 12));
+		setTitle("로그인");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 480, 161);
 
 		// 화면 가운데 위치 설정
-		frmFlowkanban.setLocationRelativeTo(null);
+		setLocationRelativeTo(null);
 
 		JLabel lbl_email = new JLabel("이메일");
 		lbl_email.setBounds(12, 21, 106, 20);
@@ -98,7 +100,13 @@ public class Login {
 						.build();
 
 				// db 연동 이메일, 비밀번호 확인 후 로그인
-				usersDao.verifyLoginUser(loginForm);
+				usersDto = usersDao.verifyLoginUser(loginForm);
+				
+				KanbanBoard kanbanBoard = new KanbanBoard(usersDto);
+				kanbanBoard.setLocationRelativeTo(null);
+				kanbanBoard.setVisible(true);
+				
+				dispose();
 			}
 		});
 		btn_login.setFont(new Font("D2Coding", Font.PLAIN, 12));
@@ -116,15 +124,15 @@ public class Login {
 		});
 		btn_join.setFont(new Font("D2Coding", Font.PLAIN, 12));
 		btn_join.setBounds(278, 77, 129, 23);
-		frmFlowkanban.getContentPane().setLayout(null);
-		frmFlowkanban.getContentPane().add(lbl_email);
-		frmFlowkanban.getContentPane().add(txt_login_email);
-		frmFlowkanban.getContentPane().add(btn_login);
-		frmFlowkanban.getContentPane().add(btn_join);
-		frmFlowkanban.getContentPane().add(lbl_password);
+		getContentPane().setLayout(null);
+		getContentPane().add(lbl_email);
+		getContentPane().add(txt_login_email);
+		getContentPane().add(btn_login);
+		getContentPane().add(btn_join);
+		getContentPane().add(lbl_password);
 
 		txt_login_password = new JPasswordField();
 		txt_login_password.setBounds(131, 47, 286, 20);
-		frmFlowkanban.getContentPane().add(txt_login_password);
+		getContentPane().add(txt_login_password);
 	}
 }
