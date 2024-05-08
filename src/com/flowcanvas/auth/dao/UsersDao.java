@@ -8,8 +8,9 @@ import java.sql.Types;
 
 import javax.swing.JOptionPane;
 
-import com.flowcanvas.auth.form.LoginForm;
-import com.flowcanvas.auth.form.RegistForm;
+import com.flowcanvas.auth.model.dto.UsersDto;
+import com.flowcanvas.auth.model.form.LoginForm;
+import com.flowcanvas.auth.model.form.RegistForm;
 import com.flowcanvas.common.db.DBConnection;
 
 import oracle.jdbc.OracleTypes;
@@ -45,38 +46,43 @@ public class UsersDao {
         }
     }
     
-    // 로그인 시 이메일, 비밀번호 유효성 검사
-    public void verifyLoginUser(LoginForm loginForm) {
-        try (Connection conn = DBConnection.getConnection();
-                CallableStatement cs = conn.prepareCall("{call USERS_CRUD_PACK.VERIFY_LOGIN_USER(?, ?, ?, ?)}")) {
-
-            cs.setString(1,loginForm.getEmail());
-            cs.setString(2, loginForm.getPassword());
-            cs.registerOutParameter(3, OracleTypes.CURSOR); // SYS_REFCURSOR
-            cs.registerOutParameter(4, Types.VARCHAR);
-
-            cs.execute();
-            rs = (ResultSet) cs.getObject(3);
-            String resultMessage = cs.getString(4);
-            
-            if("SUCCESS".equals(resultMessage)) {
-                while(rs.next()) {
-                    System.out.println("Email: " + rs.getString("email"));
-                    System.out.println("password: " + rs.getString("password"));
-                    System.out.println("nick_name: " + rs.getString("nick_name"));
-                }
-                
-            } else {
-                // FAILURE: Message
-                String[] msg = resultMessage.split(":");
-                if("FAILURE".equals(msg[0].trim())) {
-                    JOptionPane.showMessageDialog(null, msg[1].trim(), "입력 오류",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    // 이메일, 비밀번호 확인 후 로그인
+    public UsersDto verifyLoginUser(LoginForm loginForm) {
+	    try (Connection conn = DBConnection.getConnection();
+	            CallableStatement cs = conn.prepareCall("{call USERS_CRUD_PACK.VERIFY_LOGIN_USER(?, ?, ?, ?)}")) {
+	
+	        cs.setString(1,loginForm.getEmail());
+	        cs.setString(2, loginForm.getPassword());
+	        cs.registerOutParameter(3, OracleTypes.CURSOR); // SYS_REFCURSOR
+	        cs.registerOutParameter(4, Types.VARCHAR);
+	
+	        cs.execute();
+	        rs = (ResultSet) cs.getObject(3);
+	        String resultMessage = cs.getString(4);
+	        
+	        if("SUCCESS".equals(resultMessage)) {
+	        	if (rs.next()) {
+	        		return UsersDto.builder()
+	        				.userId(rs.getInt("user_id"))
+	        				.email(rs.getString("email"))
+	        				.nickName(rs.getString("nick_name"))
+	        				.build();
+	            }
+	        } else {
+	            // FAILURE: Message
+	            String[] msg = resultMessage.split(":");
+	            if("FAILURE".equals(msg[0].trim())) {
+	                JOptionPane.showMessageDialog(null, msg[1].trim(), "입력 오류",
+	                        JOptionPane.INFORMATION_MESSAGE);
+	                
+	                return null;
+	            }
+	        }
+	
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+		return null;
+	}
 }

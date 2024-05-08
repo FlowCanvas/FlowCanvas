@@ -1,4 +1,4 @@
-package com.flowcanvas.auth.domain;
+package com.flowcanvas.auth.model.domain;
 
 import java.time.LocalDateTime;
 

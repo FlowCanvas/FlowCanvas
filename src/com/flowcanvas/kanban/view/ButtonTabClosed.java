@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
+
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
- 
 
 public class ButtonTabClosed extends JPanel {
 	
@@ -53,7 +52,7 @@ public class ButtonTabClosed extends JPanel {
 		 lbl_title.setBorder(new EmptyBorder(0, 10, 0, 10));
 	}
 	
-	
+
 	private class CustomButton extends JButton implements MouseListener {
 		
 		public CustomButton(String text) {
