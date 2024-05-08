@@ -37,11 +37,8 @@ import com.flowcanvas.kanban.dao.ProjectsDao;
 import com.flowcanvas.kanban.model.dto.ProjectsDto;
 import com.flowcanvas.kanban.model.form.ProjectsMergeForm;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class KanbanBoard extends JFrame {
-	
+
 	private JTextField txt_project_name;
 	private JTabbedPane tabpnl_kanban;
 	private DefaultListModel<ProjectsDto> projectsModel;
@@ -56,10 +53,7 @@ public class KanbanBoard extends JFrame {
 	// 칸반 컬럼 (수정)
 	private JPanel[] kanbanColumns;
 	private JPanel kanban_panel;
-	
 	private List<String> checkTabCanban;
-	
-	
 
 	public KanbanBoard(UsersDto usersDto) {
 		this.usersDto = usersDto;
@@ -86,8 +80,7 @@ public class KanbanBoard extends JFrame {
 		setBounds(50, 120, 1600, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ToolTipManager.sharedInstance().setEnabled(false);
-	
-		
+
 		JPanel pnl_main_top = new JPanel();
 		getContentPane().add(pnl_main_top, BorderLayout.NORTH);
 		pnl_main_top.setPreferredSize(new Dimension(getWidth(), 50));
@@ -158,9 +151,9 @@ public class KanbanBoard extends JFrame {
 		list_project.setModel(projectsModel);
 		
 	
-	    tabpnl_kanban = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+	  tabpnl_kanban = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		spnl_mains_body.setRightComponent(tabpnl_kanban);
-	
+
 		
 		/*
 		 * ======================================== 
@@ -236,16 +229,15 @@ public class KanbanBoard extends JFrame {
 					
 					String projectTitle = list_project.getSelectedValue().getProjectName();
 					
-					
+          
 					// 이미 생성한 칸반 Panel
-	                KanbanPanelSetting pnl_total_kanban =
-	            		    new KanbanPanelSetting(list_project.getSelectedValue().getUserId()
-	            		    		, usersDto.getUserId(), Integer.parseInt(projectId));
+          KanbanPanelSetting pnl_total_kanban =
+              new KanbanPanelSetting(list_project.getSelectedValue().getUserId()
+                  , usersDto.getUserId(), Integer.parseInt(projectId));
 					
 					
 					tabpnl_kanban.addTab(projectTitle, null, pnl_total_kanban, projectId);
-					tabpnl_kanban.setSelectedIndex(tabpnl_kanban.indexOfTab(projectTitle));
-					
+					tabpnl_kanban.setSelectedIndex(tabpnl_kanban.indexOfTab(projectTitle));			
 					
 					// 탭 닫기 버튼 추가
 					addCloseTabButton(projectTitle);
@@ -302,7 +294,7 @@ public class KanbanBoard extends JFrame {
 	}
 	
 	
-	// 리스트 버튼 팝업
+  // 리스트 버튼 팝업
 	private void openProjectMenu(int x, int y, int mousePoint, ProjectsDto projectDto) {
 		
 		JPopupMenu buttonMenu = new JPopupMenu();
@@ -389,7 +381,7 @@ public class KanbanBoard extends JFrame {
 				for (int i = 0; i < kanbanColumns.length; i++) {
 
 					if (deepestComponent.getName().equals(kanbanColumns[i].getName())) {
-						kanban_panel1.remove(button);
+					  kanban_panel1.remove(button);
 						kanban_panel1.revalidate();
 						kanban_panel1.repaint();
 						kanbanColumns[i].add(button);
