@@ -21,11 +21,14 @@ import java.awt.Container;
 import java.awt.Dimension;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.border.LineBorder;
 
 import com.flowcanvas.kanban.dao.ProjectsDao;
 import com.flowcanvas.kanban.model.dto.ProjectsDto;
 import com.flowcanvas.kanban.model.form.ProjectsMergeForm;
+
+import lombok.NoArgsConstructor;
 
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
@@ -42,13 +45,14 @@ import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.JTabbedPane;
 
-
+@NoArgsConstructor
 public class KanbanBoard {
 
 	private JFrame frame;
 	private JLabel lbl_user_email;
 	private JLabel lbl_nick_name;
 	private JTextField txt_project_name;
+	private JTabbedPane tabpnl_kanban;
 	private DefaultListModel<ProjectsDto> projectsModel;
 	private JList<ProjectsDto> list_project;
 	
@@ -58,7 +62,7 @@ public class KanbanBoard {
 	// 칸반 컬럼 (수정)
 	private JPanel[] kanbanColumns;
 	private JPanel kanban_panel;
-	private List<Integer> checkTabCanban;
+	private List<String> checkTabCanban;
 	
 	
 	public static void main(String[] args) {
@@ -80,11 +84,12 @@ public class KanbanBoard {
 		this.lbl_user_email = new JLabel("이메일\t : " + email);
 		this.lbl_nick_name = new JLabel("닉네임\t : " + nickName);
 		
-		initialize();
-		
 		this.checkTabCanban = new ArrayList<>();
 		this.projectDao = new ProjectsDao();
 		this.userId = userId;
+		
+		initialize();
+		
 		
 		selProjects();
 	}
@@ -100,6 +105,7 @@ public class KanbanBoard {
 		frame = new JFrame();
 		frame.setBounds(50, 120, 1600, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		ToolTipManager.sharedInstance().setEnabled(false);
 
 		
 		JPanel pnl_main_top = new JPanel();
@@ -166,14 +172,13 @@ public class KanbanBoard {
 		projectsModel = new DefaultListModel<>();
 		list_project = new JList<>();
 		pnl_project.add(list_project, BorderLayout.CENTER);
-		list_project.setCellRenderer(new ButtonListRenderer());
+		list_project.setCellRenderer(new ButtonListRenderer(userId));
 		list_project.setModel(projectsModel);
 		
-		
-		JTabbedPane tabpnl_kanban = new JTabbedPane(JTabbedPane.TOP);
+	
+	    tabpnl_kanban = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		spnl_mains_body.setRightComponent(tabpnl_kanban);
 
-		
 		
 		/*
 		 * ======================================== 
@@ -223,11 +228,15 @@ public class KanbanBoard {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
+				if (projectsModel.isEmpty()) {
+					return;
+				}
+				
 				int mousePoint = list_project.locationToIndex(e.getPoint());
 				Rectangle mouseClick = list_project.getCellBounds(mousePoint, mousePoint);
 				Rectangle buttonSize = new Rectangle(mouseClick.x + mouseClick.width - 50, mouseClick.y, 45, mouseClick.height);
-				
-				if (buttonSize.contains(e.getPoint())) {
+			
+				if (buttonSize.contains(e.getPoint()) && list_project.getSelectedValue().getUserId() == userId) {
 					openProjectMenu(e.getX(), e.getY(), mousePoint, projectsModel.get(mousePoint));
 				}
 				
@@ -235,20 +244,21 @@ public class KanbanBoard {
 				// 칸반 보드 open (수정)
 				if (e.getClickCount() == 2) {
 					
-					int projectId = list_project.getSelectedValue().getProjectId();
+					String projectId = String.valueOf(list_project.getSelectedValue().getProjectId());
 					
-					// 프로제트 탭 확인
+					// 프로젝트 탭 확인
 					if (checkTabCanban.contains(projectId)) {
 						return;
 					}
 					checkTabCanban.add(projectId);
 					
-					
 					String projectTitle = list_project.getSelectedValue().getProjectName();
 					kanban_panel = new JPanel();
-					kanban_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-					tabpnl_kanban.addTab(projectTitle, null, kanban_panel, null);
-					tabpnl_kanban.setSelectedIndex(tabpnl_kanban.indexOfTab(projectTitle));
+					kanban_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+					
+					tabpnl_kanban.addTab(projectTitle, null, kanban_panel, projectId);
+					// 탭 닫기 버튼 추가
+					addCloseTabButton(projectTitle);
 
 					kanbanColumns = new JPanel[3];
 					
@@ -358,19 +368,35 @@ public class KanbanBoard {
 	}
 	
 	
+	// 탭 닫기 버튼
+    private void addCloseTabButton(String title) {
+    	
+        tabpnl_kanban.setTabComponentAt(
+        		tabpnl_kanban.indexOfTab(title), new ButtonTabClosed(title, tabpnl_kanban, this::onTabClosed));
+    }
+
+    
+    // 탭 닫기 버튼 이벤트 실행 후 
+	private void onTabClosed(int tabIndex) {
+		
+	    checkTabCanban.remove(tabpnl_kanban.getToolTipTextAt(tabIndex));
+	}
+	
+	
 	// 칸반 카드 드로그 앤 드롭 (수정)
 	private void setupButtonEvents(JButton button, JPanel kanban_panel1) {
-		
 		
 		button.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				
 				for (int i = 0; i < kanbanColumns.length; i++) {
 					System.out.println("Panel " + i + " location: " + kanbanColumns[i].getLocation());
 				}
 			}
 
+			
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
