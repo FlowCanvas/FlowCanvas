@@ -18,6 +18,7 @@ import com.flowcanvas.kanban.model.dto.ProjectsDto;
 
 public class ButtonListRenderer extends JPanel implements ListCellRenderer<ProjectsDto> {
 
+	private int userId;
 	private JLabel lbl_project_name;
 	private JButton btn_modify_project;
 	// 리스트 row 테두리
@@ -28,7 +29,9 @@ public class ButtonListRenderer extends JPanel implements ListCellRenderer<Proje
 	private Border combineBorder;
 
 	
-	public ButtonListRenderer() {
+	public ButtonListRenderer(int userId) {
+
+		this.userId = userId;
 
 		setLayout(new BorderLayout());
 
@@ -43,7 +46,6 @@ public class ButtonListRenderer extends JPanel implements ListCellRenderer<Proje
 		combineBorder = new CompoundBorder(listBorder, listMargin);
 	}
 
-	
 	@Override
 	public Component getListCellRendererComponent(JList<? extends ProjectsDto> listProjectDto, ProjectsDto projectDto,
 			int index, boolean isSelected, boolean cellHasFocus) {
@@ -51,6 +53,14 @@ public class ButtonListRenderer extends JPanel implements ListCellRenderer<Proje
 		// 리스트에 보여줄 텍스트
 		lbl_project_name.setText(projectDto.getProjectName());
 
+		// 프로젝트 생성자 일경우에만 버튼 활성화
+		if (projectDto.getUserId() != userId) {
+			btn_modify_project.setEnabled(false);
+		} else {
+			btn_modify_project.setEnabled(true);
+		}
+
+		// 리스트 선택시 배경 컬러
 		if (isSelected) {
 			setBackground(listProjectDto.getSelectionBackground());
 			lbl_project_name.setForeground(listProjectDto.getSelectionForeground());
