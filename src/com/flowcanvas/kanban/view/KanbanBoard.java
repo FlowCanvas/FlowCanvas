@@ -1,8 +1,6 @@
 package com.flowcanvas.kanban.view;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -11,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 
 import com.flowcanvas.auth.model.dto.UsersDto;
@@ -49,12 +45,9 @@ public class KanbanBoard extends JFrame {
 	
 	// 로그인 유저
 	private UsersDto usersDto;
-
-	// 칸반 컬럼 (수정)
-	private JPanel[] kanbanColumns;
-	private JPanel kanban_panel;
 	private List<String> checkTabCanban;
 
+	
 	public KanbanBoard(UsersDto usersDto) {
 		this.usersDto = usersDto;
 		this.projectDao = new ProjectsDao();
@@ -151,7 +144,7 @@ public class KanbanBoard extends JFrame {
 		list_project.setModel(projectsModel);
 		
 	
-	  tabpnl_kanban = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabpnl_kanban = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		spnl_mains_body.setRightComponent(tabpnl_kanban);
 
 		
@@ -229,12 +222,12 @@ public class KanbanBoard extends JFrame {
 					
 					String projectTitle = list_project.getSelectedValue().getProjectName();
 					
-          
 					// 이미 생성한 칸반 Panel
-          KanbanPanelSetting pnl_total_kanban =
-              new KanbanPanelSetting(list_project.getSelectedValue().getUserId()
-                  , usersDto.getUserId(), Integer.parseInt(projectId));
-					
+			        KanbanPanelSetting pnl_total_kanban =
+			        		new KanbanPanelSetting(list_project.getSelectedValue().getUserId()
+			                  , usersDto.getUserId()
+			                  , Integer.parseInt(projectId)
+			                  , spnl_mains_body.getRightComponent().getSize());
 					
 					tabpnl_kanban.addTab(projectTitle, null, pnl_total_kanban, projectId);
 					tabpnl_kanban.setSelectedIndex(tabpnl_kanban.indexOfTab(projectTitle));			
@@ -345,72 +338,72 @@ public class KanbanBoard extends JFrame {
 	
 	
 	// 칸반 카드 드로그 앤 드롭 (수정)
-	private void setupButtonEvents(JButton button, JPanel kanban_panel1) {
-		
-		button.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				for (int i = 0; i < kanbanColumns.length; i++) {
-					System.out.println("Panel " + i + " location: " + kanbanColumns[i].getLocation());
-				}
-			}
-
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-				Container parent = button.getParent();
-				parent.remove(button);
-
-				Component deepestComponent = SwingUtilities.getDeepestComponentAt(kanban_panel, e.getComponent().getX(),
-						e.getComponent().getY());
-				System.out.println("상대적 좌표 : " + e.getComponent().getX() + ", " + e.getComponent().getY());
-
-				if (deepestComponent == null || !(deepestComponent instanceof JPanel)
-						|| deepestComponent.getName() == null) {
-					kanban_panel1.add(button);
-					kanban_panel1.revalidate();
-					kanban_panel1.repaint();
-					return;
-				}
-
-				System.out.println(deepestComponent.getName());
-
-				for (int i = 0; i < kanbanColumns.length; i++) {
-
-					if (deepestComponent.getName().equals(kanbanColumns[i].getName())) {
-					  kanban_panel1.remove(button);
-						kanban_panel1.revalidate();
-						kanban_panel1.repaint();
-						kanbanColumns[i].add(button);
-						kanbanColumns[i].revalidate();
-						kanbanColumns[i].repaint();
-						break;
-					}
-				}
-			}
-		});
-
-		
-		button.addMouseMotionListener(new MouseMotionAdapter() {
-			private int x;
-			private int y;
-			
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				// 버튼 클릭 위치 맞추기
-				int tem_x = e.getX();
-				int tem_y = e.getY();
-
-				x += tem_x;
-				y += tem_y;
-
-				button.setBounds(x, y, 200, 30);
-				// 판넬
-				kanban_panel1.getParent().setComponentZOrder(button, 0);
-			}
-		});
-	}
+//	private void setupButtonEvents(JButton button, JPanel kanban_panel1) {
+//		
+//		button.addMouseListener(new MouseAdapter() {
+//
+//			@Override
+//			public void mousePressed(MouseEvent e) {
+//				
+//				for (int i = 0; i < kanbanColumns.length; i++) {
+//					System.out.println("Panel " + i + " location: " + kanbanColumns[i].getLocation());
+//				}
+//			}
+//
+//			
+//			@Override
+//			public void mouseReleased(MouseEvent e) {
+//
+//				Container parent = button.getParent();
+//				parent.remove(button);
+//
+//				Component deepestComponent = SwingUtilities.getDeepestComponentAt(kanban_panel, e.getComponent().getX(),
+//						e.getComponent().getY());
+//				System.out.println("상대적 좌표 : " + e.getComponent().getX() + ", " + e.getComponent().getY());
+//
+//				if (deepestComponent == null || !(deepestComponent instanceof JPanel)
+//						|| deepestComponent.getName() == null) {
+//					kanban_panel1.add(button);
+//					kanban_panel1.revalidate();
+//					kanban_panel1.repaint();
+//					return;
+//				}
+//
+//				System.out.println(deepestComponent.getName());
+//
+//				for (int i = 0; i < kanbanColumns.length; i++) {
+//
+//					if (deepestComponent.getName().equals(kanbanColumns[i].getName())) {
+//					  kanban_panel1.remove(button);
+//						kanban_panel1.revalidate();
+//						kanban_panel1.repaint();
+//						kanbanColumns[i].add(button);
+//						kanbanColumns[i].revalidate();
+//						kanbanColumns[i].repaint();
+//						break;
+//					}
+//				}
+//			}
+//		});
+//
+//		
+//		button.addMouseMotionListener(new MouseMotionAdapter() {
+//			private int x;
+//			private int y;
+//			
+//			@Override
+//			public void mouseDragged(MouseEvent e) {
+//				// 버튼 클릭 위치 맞추기
+//				int tem_x = e.getX();
+//				int tem_y = e.getY();
+//
+//				x += tem_x;
+//				y += tem_y;
+//
+//				button.setBounds(x, y, 200, 30);
+//				// 판넬
+//				kanban_panel1.getParent().setComponentZOrder(button, 0);
+//			}
+//		});
+//	}
 }

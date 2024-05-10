@@ -3,6 +3,8 @@ package com.flowcanvas.auth.view;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -52,6 +54,7 @@ public class Login extends JFrame {
 		initialize();
 	}
 
+	
 	private void initialize() {
 		setFont(new Font("D2Coding", Font.PLAIN, 12));
 		setTitle("로그인");
@@ -72,6 +75,9 @@ public class Login extends JFrame {
 		lbl_password.setFont(new Font("D2Coding", Font.PLAIN, 12));
 		lbl_password.setHorizontalAlignment(SwingConstants.RIGHT);
 		lbl_password.setPreferredSize(new Dimension(95, 20));
+		
+		txt_login_password = new JPasswordField();
+		txt_login_password.setBounds(131, 47, 286, 20);
 
 		txt_login_email = new JTextField();
 		txt_login_email.setBounds(131, 20, 286, 20);
@@ -84,31 +90,32 @@ public class Login extends JFrame {
 		btn_login.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
-				// 이메일, 비밀번호 입력 확인
-				if (txt_login_email.getText().equals("") || txt_login_password.getPassword().length == 0) {
-					JOptionPane.showMessageDialog(null, "이메일과 패스워드를 모두 입력해주세요.", "입력 오류",
-							JOptionPane.INFORMATION_MESSAGE);
-					return;
-				}
-
-				// 패스워드 암호화
-				String passwordHash = Encrypt.generateHash(txt_login_password.getPassword());
-				LoginForm loginForm = LoginForm.builder()
-						.email(txt_login_email.getText())
-						.password(passwordHash)
-						.build();
-
-				// db 연동 이메일, 비밀번호 확인 후 로그인
-				usersDto = usersDao.verifyLoginUser(loginForm);
-				
-				KanbanBoard kanbanBoard = new KanbanBoard(usersDto);
-				kanbanBoard.setLocationRelativeTo(null);
-				kanbanBoard.setVisible(true);
-				
-				dispose();
+				login();
 			}
 		});
+		
+		// 버튼에 액션 리스너 추가
+        btn_login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                login();
+            }
+        });
+        
+        // 엔터 키 이벤트를 버튼의 액션과 연결
+        txt_login_email.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                btn_login.doClick();
+            }
+        });
+        
+        txt_login_password.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                btn_login.doClick();
+            }
+        });
+		
+		
 		btn_login.setFont(new Font("D2Coding", Font.PLAIN, 12));
 		btn_login.setBounds(137, 77, 129, 23);
 
@@ -122,6 +129,8 @@ public class Login extends JFrame {
 				registerUser.setVisible(true);
 			}
 		});
+		
+		
 		btn_join.setFont(new Font("D2Coding", Font.PLAIN, 12));
 		btn_join.setBounds(278, 77, 129, 23);
 		getContentPane().setLayout(null);
@@ -130,9 +139,35 @@ public class Login extends JFrame {
 		getContentPane().add(btn_login);
 		getContentPane().add(btn_join);
 		getContentPane().add(lbl_password);
-
-		txt_login_password = new JPasswordField();
-		txt_login_password.setBounds(131, 47, 286, 20);
 		getContentPane().add(txt_login_password);
+		
+	}
+	
+	
+	// 로그인
+	private void login() {
+		
+		// 이메일, 비밀번호 입력 확인
+		if (txt_login_email.getText().trim().equals("") || txt_login_password.getPassword().length == 0) {
+			JOptionPane.showMessageDialog(this, "이메일과 패스워드를 모두 입력해주세요.", "입력 오류",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		// 패스워드 암호화
+		String passwordHash = Encrypt.generateHash(txt_login_password.getPassword());
+		LoginForm loginForm = LoginForm.builder()
+				.email(txt_login_email.getText())
+				.password(passwordHash)
+				.build();
+
+		// db 연동 이메일, 비밀번호 확인 후 로그인
+		usersDto = usersDao.verifyLoginUser(loginForm);
+		
+		KanbanBoard kanbanBoard = new KanbanBoard(usersDto);
+		kanbanBoard.setLocationRelativeTo(null);
+		kanbanBoard.setVisible(true);
+		
+		dispose();
 	}
 }

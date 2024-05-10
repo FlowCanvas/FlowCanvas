@@ -73,7 +73,7 @@ public class UsersDao {
 	            String[] msg = resultMessage.split(":");
 	            if("FAILURE".equals(msg[0].trim())) {
 	                JOptionPane.showMessageDialog(null, msg[1].trim(), "입력 오류",
-	                        JOptionPane.INFORMATION_MESSAGE);
+	                        JOptionPane.ERROR_MESSAGE);
 	                
 	                return null;
 	            }
