@@ -109,7 +109,7 @@ public class RegisterUser extends JDialog {
 						
 						String message = usersDao.insUsers(insUserDto);
 						JOptionPane.showMessageDialog(null, message,
-								"메시지", JOptionPane.INFORMATION_MESSAGE);
+								"메시지", JOptionPane.WARNING_MESSAGE);
 						
 						if(message.equals("회원가입 되었습니다.")) {
 							dispose();
