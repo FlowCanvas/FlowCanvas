@@ -226,6 +226,7 @@ public class KanbanBoard extends JFrame {
 			        KanbanPanelSetting pnl_total_kanban =
 			        		new KanbanPanelSetting(list_project.getSelectedValue().getUserId()
 			                  , usersDto.getUserId()
+			                  , usersDto.getNickName()
 			                  , Integer.parseInt(projectId)
 			                  , spnl_mains_body.getRightComponent().getSize());
 					

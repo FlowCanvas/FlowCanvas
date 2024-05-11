@@ -5,8 +5,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -14,7 +12,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -28,7 +26,6 @@ import javax.swing.border.EmptyBorder;
 import com.flowcanvas.kanban.dao.KanbanCardDao;
 import com.flowcanvas.kanban.model.dto.KanbanCardInitDto;
 import com.flowcanvas.kanban.model.form.KanbanCardForm;
-import javax.swing.BoxLayout;
 
 public class KanbanColumnPart extends JPanel {
 
@@ -38,6 +35,7 @@ public class KanbanColumnPart extends JPanel {
 	private int kanbanColumnId;
 	private String kanbanColumnName;
 	private int loginUserId;
+	private String loginNickName;
 	
 	private JButton btn_add_kanban_card;
     private JTextField txt_input_kanban_card;
@@ -53,7 +51,7 @@ public class KanbanColumnPart extends JPanel {
 	 * Create the panel.
 	 */
 	public KanbanColumnPart(JPanel kanban_view_panel, Dimension parentsSize, int len,
-			int kanbanColumnId, String kanbanColumnName, int loginUserId) {
+			int kanbanColumnId, String kanbanColumnName, int loginUserId, String loginNickName) {
 		
 		this.kanban_view_panel = kanban_view_panel;
 		this.parentsSize = parentsSize;
@@ -61,6 +59,7 @@ public class KanbanColumnPart extends JPanel {
 		this.kanbanColumnId = kanbanColumnId;
 		this.kanbanColumnName = kanbanColumnName;
 		this.loginUserId = loginUserId;
+		this.loginNickName = loginNickName;
 		this.kanbanCardDao = new KanbanCardDao();
 		
 		
@@ -135,19 +134,9 @@ public class KanbanColumnPart extends JPanel {
         pnl_kanban_card_button.setBorder(new EmptyBorder(5, 5, 5, 5));
         pnl_kanban_card_button.setLayout(new BoxLayout(pnl_kanban_card_button, BoxLayout.Y_AXIS));
 
-       
 
         // 칸반 컬럼의 카드 조회
         selKanbanCardInit(kanbanColumnId);
-        
-        
-        // 칸반 카드 생성
-        //for (KanbanCardDto dto : cardDtos) {
-        //	KanbanCardButton kanbanCardButton = new KanbanCardButton();
-        //	kanbanCardButton.setText(dto.getKanbanCardName());
-        	
-        //	pnl_kanban_card_button.add(kanbanCardButton);
-		//}
         
         
         /*
@@ -155,7 +144,6 @@ public class KanbanColumnPart extends JPanel {
 		 * 이벤트
 		 * ========================================
 		 */
-        
         
         // 칸반 카드 생성 버튼 클릭 이벤트
         btn_add_kanban_card.addMouseListener(new MouseAdapter() {
@@ -178,7 +166,9 @@ public class KanbanColumnPart extends JPanel {
 		List<KanbanCardInitDto> KanbanCardInitDtoList  = kanbanCardDao.selKanbanCardInit(kanbanColumnId);
 		
 		for (KanbanCardInitDto dto : KanbanCardInitDtoList) {
-			KanbanCardPart kanbanCardButton = new KanbanCardPart(dto.getKanbanCardName());
+			KanbanCardPart kanbanCardButton =
+					new KanbanCardPart(dto.getKanbanCardId(), dto.getKanbanCardName(), loginUserId
+			    			, loginNickName);
 			pnl_kanban_card_button.add(kanbanCardButton);
 		}
 	}

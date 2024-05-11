@@ -68,18 +68,18 @@ public class KanbanCardDao {
 			rs = (ResultSet) cs.getObject(2);
 			
 			if(rs.next()) {
-				KanbanCardDto.builder()
-				.kanbanCardId(rs.getInt("kanban_card_id"))
-				.kanbanCardName(rs.getString("kanban_card_name"))
-				.kanbanColumnId(rs.getInt("kanban_column_id"))
-				.kanbanColumnName(rs.getString("kanban_column_name"))
-				.userId(rs.getInt("user_id"))
-				.nickName(rs.getString("nick_name"))
-				.cardSeq(rs.getInt("card_seq"))
-				.priority(rs.getInt("priority"))
-				.taskSize(rs.getInt("task_size"))
-				.content(rs.getString("content"))
-				.build();
+				return KanbanCardDto.builder()
+						.kanbanCardId(rs.getInt("kanban_card_id"))
+						.kanbanCardName(rs.getString("kanban_card_name"))
+						.kanbanColumnId(rs.getInt("kanban_column_id"))
+						.kanbanColumnName(rs.getString("kanban_column_name"))
+						.userId(rs.getInt("user_id"))
+						.nickName(rs.getString("nick_name"))
+						.cardSeq(rs.getInt("card_seq"))
+						.priority(rs.getInt("priority"))
+						.taskSize(rs.getInt("task_size"))
+						.content(rs.getString("content"))
+						.build();
 			}
 			
 			rs.close();

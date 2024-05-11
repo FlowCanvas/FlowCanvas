@@ -10,10 +10,15 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,15 +30,19 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.flowcanvas.kanban.dao.FeedBackDao;
 import com.flowcanvas.kanban.dao.KanbanCardDao;
+import com.flowcanvas.kanban.model.dto.FeedBackDto;
 import com.flowcanvas.kanban.model.dto.KanbanCardDto;
 import com.flowcanvas.kanban.model.enums.Priority;
 import com.flowcanvas.kanban.model.enums.TaskSize;
+import com.flowcanvas.kanban.model.form.FeedBackForm;
 import com.flowcanvas.kanban.model.form.KanbanCardForm;
 
-public class KanbanCard extends JPanel {
+public class KanbanCard extends JDialog {
 	
 	private int loginUserId;
+	private String loginNickName;
 	private int kanbanCardId;
 	private int kanbanColumnId;
 	private int cardSeq;
@@ -48,20 +57,30 @@ public class KanbanCard extends JPanel {
 	private JButton btn_ok;
 	private JScrollPane scpnl_body;
 	
+	private JPanel pnl_feedback_list;
+	private FeedbackPart feedbackPart;
+	private JTextArea txta_feedback_write;
+	
 	private KanbanCardDao kanbanCardDao;
+	private FeedBackDao feedBackDao;
 	
 	
-	public KanbanCard(int kanbanCardId, int loginUserId) {
+	public KanbanCard(int kanbanCardId, int loginUserId, String loginNickName) {
 		
 		this.kanbanCardId = kanbanCardId;
+		this.loginNickName = loginNickName;
 		this.loginUserId = loginUserId;
 		this.kanbanCardDao = new KanbanCardDao();
+		this.feedBackDao = new FeedBackDao();
 		
 		// 컴포넌트 생성
 		initialize();
 		
 	    // 칸반 카드 조회
         selKanbanCard();
+        
+        // 피드백 조회
+        selFeedBack();
 	}
 	
 	
@@ -72,12 +91,13 @@ public class KanbanCard extends JPanel {
 	*/
 	private void initialize() {
 		
-		setLayout(new BorderLayout(0, 0));
-		setBounds(1175, 100, 400, 550);
+		setTitle("칸반 카드 상세");
+		getContentPane().setLayout(new BorderLayout(0, 0));
+		setBounds(0, 0, 450, 550);
 		
 		
 		JPanel pnl_top = new JPanel();
-		add(pnl_top, BorderLayout.NORTH);
+		getContentPane().add(pnl_top, BorderLayout.NORTH);
 		pnl_top.setPreferredSize(new Dimension(this.getWidth(), 70));
 		pnl_top.setLayout(new BorderLayout(0, 0));
 		
@@ -92,12 +112,8 @@ public class KanbanCard extends JPanel {
 		lbl_column_name = new JLabel("칸반 칼럼");
 		pnl_close.add(lbl_column_name, BorderLayout.WEST);
 		lbl_column_name.setBorder(new EmptyBorder(2, 5, 2, 2));
-		
-		
-		JButton btn_close = new JButton("X");
-		pnl_close.add(btn_close, BorderLayout.EAST);
-		
 			
+		
 		JPanel pnl_title_back = new JPanel();
 		pnl_top.add(pnl_title_back, BorderLayout.CENTER);
 		pnl_title_back.setLayout(new BorderLayout(0, 0));
@@ -118,7 +134,8 @@ public class KanbanCard extends JPanel {
 		
 		
 		JPanel pnl_body = new JPanel();
-		add(pnl_body, BorderLayout.CENTER);
+		pnl_body.setBorder(new EmptyBorder(3, 3, 3, 3));
+		getContentPane().add(pnl_body, BorderLayout.CENTER);
 		pnl_body.setLayout(new BorderLayout(0, 0));
 		pnl_body.setPreferredSize(new Dimension(getWidth(),getHeight()));
 		
@@ -258,7 +275,7 @@ public class KanbanCard extends JPanel {
         pnl_feedback_login_user.setLayout(new BorderLayout(0, 0));
         
         
-        JLabel lbl_feedback_login_user = new JLabel("로그인 닉네임");
+        JLabel lbl_feedback_login_user = new JLabel(loginNickName);
         pnl_feedback_login_user.add(lbl_feedback_login_user, BorderLayout.CENTER);
         lbl_feedback_login_user.setPreferredSize(new Dimension(pnl_feedback_login_user.getWidth(), 30));
         lbl_feedback_login_user.setBorder(new EmptyBorder(15, 20, 2, 2));
@@ -269,7 +286,7 @@ public class KanbanCard extends JPanel {
         pnl_feedback_write.setLayout(new BorderLayout(0, 0));
         
         
-        JTextArea txta_feedback_write = new JTextArea();
+        txta_feedback_write = new JTextArea();
         pnl_feedback_write.add(txta_feedback_write, BorderLayout.CENTER);
         txta_feedback_write.setFont(new Font("굴림", Font.PLAIN, 15));
         txta_feedback_write.setMargin(new Insets(15, 20, 2, 2));
@@ -287,6 +304,12 @@ public class KanbanCard extends JPanel {
         pnl_feedback_ok.add(btn_feedback_ok, BorderLayout.CENTER);
         
         
+        pnl_feedback_list = new JPanel();
+        pnl_feedback_list.setBorder(new EmptyBorder(5, 5, 5, 5));
+        pnl_division.add(pnl_feedback_list, BorderLayout.CENTER);
+        pnl_feedback_list.setLayout(new BoxLayout(pnl_feedback_list, BoxLayout.Y_AXIS));
+        
+        
 		/*
 		* ======================================== 
 		* 이벤트
@@ -296,6 +319,24 @@ public class KanbanCard extends JPanel {
         btn_ok.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		mergeKanbanCard();
+        	}
+        });
+        
+        // 피드백 등록 이벤트
+        btn_feedback_ok.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		
+        		String strFeedback = txta_feedback_write.getText();
+        		if(strFeedback.isBlank() || strFeedback.isEmpty()) {
+        			JOptionPane.showMessageDialog(KanbanCard.this, "피드백을 입력해주세요", "입력 확인"
+        					, JOptionPane.WARNING_MESSAGE);
+        			
+        			txta_feedback_write.requestFocusInWindow();
+        			return;
+        		}
+        		
+        		mergeFeedBack(strFeedback);
         	}
         });
 	}
@@ -313,12 +354,14 @@ public class KanbanCard extends JPanel {
 		lbl_write_user.setText(kanbanCardInfo.getNickName());
 		txt_title.setText(kanbanCardInfo.getKanbanCardName());
 		txta_content.setText(kanbanCardInfo.getContent());
+		
 		for (int i = 0; i < cb_priority.getItemCount(); i++) {
 	        if (((Priority)cb_priority.getItemAt(i)).getValue() == kanbanCardInfo.getPriority()) {
 	        	cb_priority.setSelectedIndex(i);
 	            break;
 	        }
 	    }
+		
 		for (int i = 0; i < cb_taskSize.getItemCount(); i++) {
 	        if (((TaskSize)cb_taskSize.getItemAt(i)).getValue() == kanbanCardInfo.getTaskSize()) {
 	        	cb_taskSize.setSelectedIndex(i);
@@ -415,5 +458,51 @@ public class KanbanCard extends JPanel {
 	private void scrollToTop() {
 		
 		scpnl_body.getVerticalScrollBar().setValue(0);
+	}
+	
+	
+	// 피드백 조회
+	private void selFeedBack() {
+		
+		if(feedbackPart != null) {
+			pnl_feedback_list.removeAll();
+		}
+		
+		List<FeedBackDto> feedBackDtoList = feedBackDao.selFeedBack(kanbanCardId);
+		if(feedBackDtoList != null) {
+			
+			// 데이터 바인딩
+			for(FeedBackDto dto : feedBackDtoList) {
+				feedbackPart = new FeedbackPart(dto, loginUserId, new FeedbackPart.Callback() {
+					@Override
+					public void onFeedBackModify() {
+						// 피드백 조회
+				        selFeedBack();
+					}
+				});
+				
+				pnl_feedback_list.add(feedbackPart);
+			}
+			
+			pnl_feedback_list.revalidate();
+			pnl_feedback_list.repaint();
+		}
+	}
+	
+	// 피드백 등록
+	private void mergeFeedBack(String strFeedBack) {
+		
+		FeedBackForm feedBackForm = FeedBackForm.builder()
+				.content(strFeedBack)
+				.build();
+		
+		feedBackDao.mergerFeedBack(feedBackForm, 0, kanbanCardId, loginUserId);
+		
+		txta_feedback_write.setText("");
+		JOptionPane.showMessageDialog(this, "저장되었습니다.", "저장 완료"
+				, JOptionPane.INFORMATION_MESSAGE);
+		
+		// 피드백 조회
+		selFeedBack();
 	}
 }
