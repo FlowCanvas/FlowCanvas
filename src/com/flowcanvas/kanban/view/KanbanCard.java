@@ -132,6 +132,8 @@ public class KanbanCard extends JPanel {
         
         scpnl_body = new JScrollPane();
         pnl_body.add(scpnl_body, BorderLayout.CENTER);
+        scpnl_body.getVerticalScrollBar().setUnitIncrement(16); // 단위 스크롤량 설정
+        scpnl_body.getVerticalScrollBar().setBlockIncrement(50); // 블록 스크롤량 설정
         
         
         JPanel pnl_division = new JPanel();
