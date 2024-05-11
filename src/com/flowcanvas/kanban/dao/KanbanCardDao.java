@@ -4,6 +4,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.flowcanvas.common.db.DBConnection;
 import com.flowcanvas.kanban.model.dto.KanbanCardDto;
@@ -18,7 +20,7 @@ public class KanbanCardDao {
 	
 	// 칸반 카드 조회
 	public KanbanCardDto selKanbanCard(int kanbanCardId) {
-
+		
 		try (Connection conn = DBConnection.getConnection();
 				CallableStatement cs = conn.prepareCall("{call KANBAN_CARD_CRUD_PACK.SEL_KANBAN_CARD(?, ?)}")) {
 
@@ -30,19 +32,20 @@ public class KanbanCardDao {
 			rs = (ResultSet) cs.getObject(2);
 			
 			if(rs.next()) {
-				return KanbanCardDto.builder()
-						.kanbanCardId(rs.getInt("kanban_card_id"))
-						.kanbanCardName(rs.getString("kanban_card_name"))
-						.kanbanColumnId(rs.getInt("kanban_column_id"))
-						.kanbanColumnName(rs.getString("kanban_column_name"))
-						.userId(rs.getInt("user_id"))
-						.nickName(rs.getString("nick_name"))
-						.cardSeq(rs.getInt("card_seq"))
-						.priority(rs.getInt("priority"))
-						.taskSize(rs.getInt("task_size"))
-						.content(rs.getString("content"))
-						.build();
+				KanbanCardDto.builder()
+				.kanbanCardId(rs.getInt("kanban_card_id"))
+				.kanbanCardName(rs.getString("kanban_card_name"))
+				.kanbanColumnId(rs.getInt("kanban_column_id"))
+				.kanbanColumnName(rs.getString("kanban_column_name"))
+				.userId(rs.getInt("user_id"))
+				.nickName(rs.getString("nick_name"))
+				.cardSeq(rs.getInt("card_seq"))
+				.priority(rs.getInt("priority"))
+				.taskSize(rs.getInt("task_size"))
+				.content(rs.getString("content"))
+				.build();
 			}
+			
 			rs.close();
 			return null;
 			
@@ -63,9 +66,12 @@ public class KanbanCardDao {
 			cs.setInt(2, kcf.getKanbanColumnId());
 			cs.setInt(3, kcf.getUserId());
 			cs.setString(4, kcf.getKanbanCardName());
-			cs.setInt(5, kcf.getCardSeq());
-			cs.setInt(6, kcf.getPriority());
-			cs.setInt(7, kcf.getTaskSize());
+			
+			// 삼항 연산자
+			cs.setObject(5, kcf.getCardSeq() == null ? null : kcf.getCardSeq(), java.sql.Types.INTEGER);
+			cs.setObject(6, kcf.getPriority() == null ? null : kcf.getPriority(), java.sql.Types.INTEGER);
+			cs.setObject(7, kcf.getTaskSize() == null ? null : kcf.getTaskSize(), java.sql.Types.INTEGER);
+			
 			cs.setString(8, kcf.getContent());
 
 			cs.executeUpdate();
