@@ -105,6 +105,7 @@ public class KanbanPanelSetting extends JPanel {
 				
 			}
 		});
+		
 		pnl_buttons.add(btn_setting);
 		btn_setting.setVisible(projectListUserId == loginUserId);
 		
@@ -138,30 +139,11 @@ public class KanbanPanelSetting extends JPanel {
 			
 			KanbanColumnPart kanbanColumnPart =
 					new KanbanColumnPart(kanban_view_panel, parentsSize, len,
-							dto.getKanbanColumnId(), dto.getKanbanColumnName());
+							dto.getKanbanColumnId(), dto.getKanbanColumnName(), loginUserId);
 		
 			
 			JPanel kanban_column_panel = new JPanel();
 			kanban_view_panel.add(kanbanColumnPart);
-			
-//			// 스크롤 생성 시 밑부분 조정
-//			int colHeight = (len <= 3 ? 80 : 95);
-//			kanban_column_panel.setPreferredSize(
-//					new Dimension((int) (parentsSize.getWidth() - 30) / len, (int) (parentsSize.getHeight() - colHeight)));
-//			
-//			// Top panel 설정
-//            JPanel topPanel = new JPanel();
-//            kanban_column_panel.add(topPanel, BorderLayout.NORTH);
-//            topPanel.setLayout(new BorderLayout(0, 0));
-//            // Top 패널 크기 설정
-//            topPanel.setPreferredSize(new Dimension(kanban_column_panel.getWidth(), 40));  
-//            topPanel.setBackground(Color.LIGHT_GRAY);
-            
-//            JLabel kanban_column_name = new JLabel();
-//            kanban_column_name.setText(dto.getKanbanColumnName());
-//            kanban_column_name.setHorizontalAlignment(SwingConstants.CENTER);
-//            kanban_column_name.setFont(new Font("D2Coding", Font.PLAIN, 14));
-//            topPanel.add(kanban_column_name, BorderLayout.CENTER);
 
 		}
 		

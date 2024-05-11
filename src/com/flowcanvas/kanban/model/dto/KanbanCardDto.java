@@ -13,8 +13,8 @@ public class KanbanCardDto {
 	private String kanbanColumnName;
 	private int userId;
 	private String nickName;
-	private int cardSeq;
-	private int priority;
-	private int taskSize;
+	private Integer cardSeq;
+	private Integer priority;
+	private Integer taskSize;
 	private String content;
 }

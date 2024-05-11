@@ -11,8 +11,8 @@ public class KanbanCardForm {
 	private String kanbanCardName;
 	private int kanbanColumnId;
 	private int userId;
-	private int cardSeq;
-	private int priority;
-	private int taskSize;
+	private Integer cardSeq;
+	private Integer priority;
+	private Integer taskSize;
 	private String content;
 }
