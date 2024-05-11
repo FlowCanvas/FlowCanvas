@@ -234,7 +234,6 @@ public class KanbanBoard extends JFrame {
 					
 					// 탭 닫기 버튼 추가
 					addCloseTabButton(projectTitle);
-	
 				}
 			}
 		});

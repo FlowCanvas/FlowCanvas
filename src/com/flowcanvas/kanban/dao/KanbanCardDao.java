@@ -9,6 +9,8 @@ import java.util.List;
 
 import com.flowcanvas.common.db.DBConnection;
 import com.flowcanvas.kanban.model.dto.KanbanCardDto;
+import com.flowcanvas.kanban.model.dto.KanbanCardInitDto;
+import com.flowcanvas.kanban.model.dto.ProjectsDto;
 import com.flowcanvas.kanban.model.form.KanbanCardForm;
 
 import oracle.jdbc.internal.OracleTypes;
@@ -16,6 +18,40 @@ import oracle.jdbc.internal.OracleTypes;
 public class KanbanCardDao {
 	
 	private ResultSet rs;
+	
+	
+	// 칸반 카드 세팅 조회
+	public List<KanbanCardInitDto> selKanbanCardInit(int kanbanColumnId) {
+		
+		try (Connection conn = DBConnection.getConnection();
+				CallableStatement cs = conn.prepareCall("{call KANBAN_CARD_CRUD_PACK.SEL_KANBAN_CARD_INIT(?, ?)}")) {
+			
+			cs.setInt(1, kanbanColumnId);
+			cs.registerOutParameter(2, OracleTypes.CURSOR);
+			
+			cs.execute();
+
+			rs = (ResultSet) cs.getObject(2);
+
+			List<KanbanCardInitDto> kanbanCardList = new ArrayList<>();
+			while (rs.next()) {
+				KanbanCardInitDto selKanbanCard = KanbanCardInitDto.builder()
+						.kanbanCardId(rs.getInt("Kanban_card_id"))
+						.kanbanCardName(rs.getString("kanban_card_name"))
+						.kanbanColumnId(rs.getInt("kanban_column_id"))
+						.userId(rs.getInt("user_id"))
+						.build();
+
+				kanbanCardList.add(selKanbanCard);
+			}
+			
+			return kanbanCardList;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	// 칸반 카드 조회
