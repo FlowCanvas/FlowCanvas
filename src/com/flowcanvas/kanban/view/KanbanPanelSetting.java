@@ -24,6 +24,7 @@ public class KanbanPanelSetting extends JPanel {
 
 	private int projectListUserId;
 	private int loginUserId;
+	private String loginNickName;
 	private int projectId;
 	
 	private JPanel[] kanbanColumns;
@@ -38,12 +39,13 @@ public class KanbanPanelSetting extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public KanbanPanelSetting(int projectListUserId, int loginUserId
+	public KanbanPanelSetting(int projectListUserId, int loginUserId, String loginNickName
 							 , int projectId, Dimension parentsSize) {
 		setBorder(new MatteBorder(3, 3, 3, 3, (Color) new Color(200, 221, 242)));
 		
 		this.projectListUserId = projectListUserId;
 		this.loginUserId = loginUserId;
+		this.loginNickName = loginNickName;
 		this.projectId = projectId;
 		this.kanbanColumnDao = new KanbanColumnDao();
 		this.parentsSize = parentsSize;
@@ -139,7 +141,8 @@ public class KanbanPanelSetting extends JPanel {
 			
 			KanbanColumnPart kanbanColumnPart =
 					new KanbanColumnPart(kanban_view_panel, parentsSize, len,
-							dto.getKanbanColumnId(), dto.getKanbanColumnName(), loginUserId);
+							dto.getKanbanColumnId(), dto.getKanbanColumnName()
+							, loginUserId, loginNickName);
 		
 			
 			JPanel kanban_column_panel = new JPanel();
