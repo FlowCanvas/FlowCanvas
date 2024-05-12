@@ -11,4 +11,5 @@ public class KanbanCardInitDto {
 	private String kanbanCardName;
 	private int kanbanColumnId;
 	private int userId;
+	private String nickName;
 }
