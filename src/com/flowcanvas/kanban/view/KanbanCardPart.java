@@ -13,6 +13,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
@@ -131,8 +133,17 @@ public class KanbanCardPart extends JPanel {
 		btn_del.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				kanbanCardDao.delKanbanCard(kanbanCardId);
-				callBack.onCardUpdated(kanbanColumnId);
+				int delCheckMessage = 
+			    		JOptionPane.showConfirmDialog(KanbanCardPart.this, "삭제하시겠습니까?", "삭제 확인", 
+			    				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+			    if (delCheckMessage == JOptionPane.YES_OPTION) {
+			    	
+					kanbanCardDao.delKanbanCard(kanbanCardId);
+					callBack.onCardUpdated(kanbanColumnId);
+			        
+			        JOptionPane.showMessageDialog(KanbanCardPart.this, "삭제되었습니다.", "삭제 완료", JOptionPane.INFORMATION_MESSAGE);
+			    }
 			}
 		});
 	}

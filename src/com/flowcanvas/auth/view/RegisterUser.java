@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -18,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.flowcanvas.auth.dao.UsersDao;
 import com.flowcanvas.auth.model.form.RegistForm;
+import com.flowcanvas.auth.utill.EmailValidator;
 import com.flowcanvas.common.encrypt.Encrypt;
 
 import javax.swing.JPasswordField;
@@ -96,6 +99,13 @@ public class RegisterUser extends JDialog {
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						
+						// 이메일 유효성 검사
+						if (!EmailValidator.isValidEmail(txt_register_email.getText())) {
+							JOptionPane.showMessageDialog(RegisterUser.this, "이메일 형식을 확인해 주세요.", "입력 오류",
+									JOptionPane.WARNING_MESSAGE);
+							return;
+				        }
+
 						// 패스워드 암호화
 						String passwordHash =
 								Encrypt.generateHash(txt_register_password.getPassword());

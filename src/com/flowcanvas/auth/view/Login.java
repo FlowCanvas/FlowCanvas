@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,8 +21,11 @@ import javax.swing.SwingConstants;
 import com.flowcanvas.auth.dao.UsersDao;
 import com.flowcanvas.auth.model.dto.UsersDto;
 import com.flowcanvas.auth.model.form.LoginForm;
+import com.flowcanvas.auth.utill.EmailValidator;
 import com.flowcanvas.common.encrypt.Encrypt;
 import com.flowcanvas.kanban.view.KanbanBoard;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class Login extends JFrame {
 	
@@ -153,6 +158,13 @@ public class Login extends JFrame {
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
+		
+		// 이메일 유효성 검사
+		if (!EmailValidator.isValidEmail(txt_login_email.getText())) {
+			JOptionPane.showMessageDialog(this, "이메일 형식을 확인해 주세요.", "입력 오류",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+        }
 
 		// 패스워드 암호화
 		String passwordHash = Encrypt.generateHash(txt_login_password.getPassword());
