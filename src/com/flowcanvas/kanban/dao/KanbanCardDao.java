@@ -10,7 +10,6 @@ import java.util.List;
 import com.flowcanvas.common.db.DBConnection;
 import com.flowcanvas.kanban.model.dto.KanbanCardDto;
 import com.flowcanvas.kanban.model.dto.KanbanCardInitDto;
-import com.flowcanvas.kanban.model.dto.ProjectsDto;
 import com.flowcanvas.kanban.model.form.KanbanCardForm;
 
 import oracle.jdbc.internal.OracleTypes;
@@ -40,6 +39,7 @@ public class KanbanCardDao {
 						.kanbanCardName(rs.getString("kanban_card_name"))
 						.kanbanColumnId(rs.getInt("kanban_column_id"))
 						.userId(rs.getInt("user_id"))
+						.nickName(rs.getString("nick_name"))
 						.build();
 
 				kanbanCardList.add(selKanbanCard);
@@ -109,6 +109,40 @@ public class KanbanCardDao {
 			cs.setObject(7, kcf.getTaskSize() == null ? null : kcf.getTaskSize(), java.sql.Types.INTEGER);
 			
 			cs.setString(8, kcf.getContent());
+
+			cs.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	// 칸반 카드 순서 수정
+	public void updKanbanCardSeq(int kanbanCardId, int kanbanColumnId, int cardSeq) {
+
+		try (Connection conn = DBConnection.getConnection();
+				CallableStatement cs = conn.prepareCall("{call KANBAN_CARD_CRUD_PACK.UPD_KANBAN_CARD_SEQ(?, ?, ?)}")) {
+	
+			cs.setInt(1, kanbanCardId);
+			cs.setInt(2, kanbanColumnId);
+			cs.setInt(3, cardSeq);
+			
+			cs.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	// 칸반 카드 삭제
+	public void delKanbanCard(int kanbanCardId) {
+		
+		try (Connection conn = DBConnection.getConnection();
+				CallableStatement cs = conn.prepareCall("{call KANBAN_CARD_CRUD_PACK.DEL_KANBAN_CARD(?)}")) {
+	
+			cs.setInt(1, kanbanCardId);
 
 			cs.executeUpdate();
 

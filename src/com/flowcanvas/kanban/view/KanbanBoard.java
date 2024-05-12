@@ -227,8 +227,7 @@ public class KanbanBoard extends JFrame {
 			        		new KanbanPanelSetting(list_project.getSelectedValue().getUserId()
 			                  , usersDto.getUserId()
 			                  , usersDto.getNickName()
-			                  , Integer.parseInt(projectId)
-			                  , spnl_mains_body.getRightComponent().getSize());
+			                  , Integer.parseInt(projectId));
 					
 					tabpnl_kanban.addTab(projectTitle, null, pnl_total_kanban, projectId);
 					tabpnl_kanban.setSelectedIndex(tabpnl_kanban.indexOfTab(projectTitle));			
@@ -335,75 +334,4 @@ public class KanbanBoard extends JFrame {
 		
 	    checkTabCanban.remove(tabpnl_kanban.getToolTipTextAt(tabIndex));
 	}
-	
-	
-	// 칸반 카드 드로그 앤 드롭 (수정)
-//	private void setupButtonEvents(JButton button, JPanel kanban_panel1) {
-//		
-//		button.addMouseListener(new MouseAdapter() {
-//
-//			@Override
-//			public void mousePressed(MouseEvent e) {
-//				
-//				for (int i = 0; i < kanbanColumns.length; i++) {
-//					System.out.println("Panel " + i + " location: " + kanbanColumns[i].getLocation());
-//				}
-//			}
-//
-//			
-//			@Override
-//			public void mouseReleased(MouseEvent e) {
-//
-//				Container parent = button.getParent();
-//				parent.remove(button);
-//
-//				Component deepestComponent = SwingUtilities.getDeepestComponentAt(kanban_panel, e.getComponent().getX(),
-//						e.getComponent().getY());
-//				System.out.println("상대적 좌표 : " + e.getComponent().getX() + ", " + e.getComponent().getY());
-//
-//				if (deepestComponent == null || !(deepestComponent instanceof JPanel)
-//						|| deepestComponent.getName() == null) {
-//					kanban_panel1.add(button);
-//					kanban_panel1.revalidate();
-//					kanban_panel1.repaint();
-//					return;
-//				}
-//
-//				System.out.println(deepestComponent.getName());
-//
-//				for (int i = 0; i < kanbanColumns.length; i++) {
-//
-//					if (deepestComponent.getName().equals(kanbanColumns[i].getName())) {
-//					  kanban_panel1.remove(button);
-//						kanban_panel1.revalidate();
-//						kanban_panel1.repaint();
-//						kanbanColumns[i].add(button);
-//						kanbanColumns[i].revalidate();
-//						kanbanColumns[i].repaint();
-//						break;
-//					}
-//				}
-//			}
-//		});
-//
-//		
-//		button.addMouseMotionListener(new MouseMotionAdapter() {
-//			private int x;
-//			private int y;
-//			
-//			@Override
-//			public void mouseDragged(MouseEvent e) {
-//				// 버튼 클릭 위치 맞추기
-//				int tem_x = e.getX();
-//				int tem_y = e.getY();
-//
-//				x += tem_x;
-//				y += tem_y;
-//
-//				button.setBounds(x, y, 200, 30);
-//				// 판넬
-//				kanban_panel1.getParent().setComponentZOrder(button, 0);
-//			}
-//		});
-//	}
 }

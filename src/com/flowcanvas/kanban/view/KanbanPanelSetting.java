@@ -2,7 +2,6 @@ package com.flowcanvas.kanban.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -26,21 +25,14 @@ public class KanbanPanelSetting extends JPanel {
 	private int loginUserId;
 	private String loginNickName;
 	private int projectId;
-	
-	private JPanel[] kanbanColumns;
-	private JPanel kanban_panel;
-	
+
 	private KanbanColumnDao kanbanColumnDao;
 	
 	private JPanel kanban_view_panel;
-	private Dimension parentsSize;
 	
 	
-	/**
-	 * Create the panel.
-	 */
-	public KanbanPanelSetting(int projectListUserId, int loginUserId, String loginNickName
-							 , int projectId, Dimension parentsSize) {
+	public KanbanPanelSetting(int projectListUserId, int loginUserId, String loginNickName, int projectId) {
+		
 		setBorder(new MatteBorder(3, 3, 3, 3, (Color) new Color(200, 221, 242)));
 		
 		this.projectListUserId = projectListUserId;
@@ -48,7 +40,6 @@ public class KanbanPanelSetting extends JPanel {
 		this.loginNickName = loginNickName;
 		this.projectId = projectId;
 		this.kanbanColumnDao = new KanbanColumnDao();
-		this.parentsSize = parentsSize;
 		
 		// 화면 GUI
 		initGUI();
@@ -56,6 +47,7 @@ public class KanbanPanelSetting extends JPanel {
 		// 조회
 		getKanbanColList(projectId, "main");
 	}
+	
 	
 	// 화면 GUI
 	private void initGUI() {
@@ -136,16 +128,13 @@ public class KanbanPanelSetting extends JPanel {
 		List<KanbanColumnDto> kanbanColumnDtoList =
         		kanbanColumnDao.selKanbancolumnData(projectId, uiSelected);
 		
-		int len = kanbanColumnDtoList.size();
 		for (KanbanColumnDto dto : kanbanColumnDtoList) {
 			
 			KanbanColumnPart kanbanColumnPart =
-					new KanbanColumnPart(kanban_view_panel, parentsSize, len,
+					new KanbanColumnPart(kanban_view_panel,
 							dto.getKanbanColumnId(), dto.getKanbanColumnName()
 							, loginUserId, loginNickName);
 		
-			
-			JPanel kanban_column_panel = new JPanel();
 			kanban_view_panel.add(kanbanColumnPart);
 
 		}
@@ -153,5 +142,4 @@ public class KanbanPanelSetting extends JPanel {
 		kanban_view_panel.revalidate();
 		kanban_view_panel.repaint();
 	}
-
 }
