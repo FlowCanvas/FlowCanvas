@@ -272,7 +272,7 @@ public class KanbanBoard extends JFrame {
 	private void delProject(ProjectsDto projectsDto) {
 		
 	    int delCheckMessage = 
-	    		JOptionPane.showConfirmDialog(this, "프로젝트를 삭제하시겠습니까?", "삭제 확인", 
+	    		JOptionPane.showConfirmDialog(this, "삭제하시겠습니까?", "삭제 확인", 
 	    				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 	    if (delCheckMessage == JOptionPane.YES_OPTION) {
@@ -281,12 +281,12 @@ public class KanbanBoard extends JFrame {
 	        // 프로젝트 리스트 조회
 	        selProjects();
 	        
-	        JOptionPane.showMessageDialog(this, "프로젝트가 삭제되었습니다.", "삭제 완료", JOptionPane.INFORMATION_MESSAGE);
+	        JOptionPane.showMessageDialog(this, "삭제되었습니다.", "삭제 완료", JOptionPane.INFORMATION_MESSAGE);
 	    }
 	}
 	
 	
-  // 리스트 버튼 팝업
+	// 리스트 버튼 팝업
 	private void openProjectMenu(int x, int y, int mousePoint, ProjectsDto projectDto) {
 		
 		JPopupMenu buttonMenu = new JPopupMenu();
