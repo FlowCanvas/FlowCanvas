@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -30,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.flowcanvas.common.socket.client.ClientServer;
 import com.flowcanvas.kanban.dao.FeedBackDao;
 import com.flowcanvas.kanban.dao.KanbanCardDao;
 import com.flowcanvas.kanban.model.dto.FeedBackDto;
@@ -65,13 +67,22 @@ public class KanbanCard extends JDialog {
 	private FeedBackDao feedBackDao;
 	
 	
-	public KanbanCard(int kanbanCardId, int loginUserId, String loginNickName) {
+	private ClientServer clientServer;
+	private int projectId;
+	
+	
+	public KanbanCard(int kanbanCardId, int loginUserId, String loginNickName,
+			ClientServer clientServer, int projectId) {
 		
 		this.kanbanCardId = kanbanCardId;
 		this.loginNickName = loginNickName;
 		this.loginUserId = loginUserId;
 		this.kanbanCardDao = new KanbanCardDao();
 		this.feedBackDao = new FeedBackDao();
+		
+		this.clientServer = clientServer;
+		this.projectId = projectId;
+		
 		
 		// 컴포넌트 생성
 		initialize();
@@ -443,6 +454,14 @@ public class KanbanCard extends JDialog {
 			
 			// 칸반 카드 조회
 			selKanbanCard();
+			
+			
+			try {
+                clientServer.sendMessage("cardplus:" + projectId);
+                
+             } catch (IOException e1) {
+                e1.printStackTrace();
+             }
 			
 		} else {
 			// 스크롤 맨위로 올리기

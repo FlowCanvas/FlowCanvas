@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -31,6 +31,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import com.flowcanvas.common.socket.client.ClientServer;
 import com.flowcanvas.kanban.dao.KanbanCardDao;
 import com.flowcanvas.kanban.model.dto.KanbanCardInitDto;
 import com.flowcanvas.kanban.model.form.KanbanCardForm;
@@ -52,18 +53,27 @@ public class KanbanColumnPart extends JPanel {
     private JScrollPane scrollPane;
     private JPanel pnl_kanban_card_button;
     
+    
+    private ClientServer clientServer;
+    private int projectId;
+    
 	
 	/**
 	 * Create the panel.
 	 */
-	public KanbanColumnPart(JPanel kanban_view_panel,
-			int kanbanColumnId, String kanbanColumnName, int loginUserId, String loginNickName) {
+    public KanbanColumnPart(JPanel kanban_view_panel, int projectId,
+            int kanbanColumnId, String kanbanColumnName, int loginUserId, String loginNickName,
+            ClientServer clientServer) {
 		
 		this.kanban_view_panel = kanban_view_panel;
 		this.kanbanColumnId = kanbanColumnId;
 		this.kanbanColumnName = kanbanColumnName;
 		this.loginUserId = loginUserId;
 		this.loginNickName = loginNickName;
+		this.clientServer = clientServer;
+		this.projectId = projectId;
+		
+		
 		this.kanbanCardDao = new KanbanCardDao();
 		
 		
@@ -215,11 +225,19 @@ public class KanbanColumnPart extends JPanel {
 			
 			KanbanCardPart kanbanCard = new KanbanCardPart(
 					dto.getKanbanColumnId(), dto.getKanbanCardId(), dto.getKanbanCardName(), 
-					dto.getUserId(), dto.getNickName(), loginUserId, loginNickName, 
-					new KanbanCardPart.CallBack() {
+					dto.getUserId(), dto.getNickName(), loginUserId, loginNickName,
+					clientServer, projectId, new KanbanCardPart.CallBack() {
+						
 						@Override
 						public void onCardUpdated(int kanbanColumnId) {
 							selKanbanCardInit(kanbanColumnId);
+							
+							try {
+			                     clientServer.sendMessage("cardplus:" + projectId);
+			                     
+			                  } catch (IOException e1) {
+			                     e1.printStackTrace();
+			                  }
 						}
 					});
 
@@ -275,6 +293,14 @@ public class KanbanColumnPart extends JPanel {
 			kanbanCardDao.mergeKanbanCard(KanbanCardForm.builder().kanbanCardName(kanbanCardName)
 					.kanbanColumnId(kanbanColumnId).userId(loginUserId).build());
 		}
+		
+		try {
+            clientServer.sendMessage("cardplus:" + projectId);
+            
+         } catch (IOException e1) {
+            e1.printStackTrace();
+         }
+		
 		selKanbanCardInit(kanbanColumnId);
 	}
 	
@@ -398,6 +424,14 @@ public class KanbanColumnPart extends JPanel {
 				
 				// 칸반 카드 순서 변경
 				updKanbanCardSeq(kanbanCardId, choiceKanbanColumn, choiceSeq);
+				
+				try {
+                    clientServer.sendMessage("cardplus:" + projectId);
+                    
+                 } catch (IOException e1) {
+                    e1.printStackTrace();
+                 }
+				
 				activePanel.revalidate();
 				activePanel.repaint();
 			}

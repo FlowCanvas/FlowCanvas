@@ -7,8 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,9 +22,8 @@ import com.flowcanvas.auth.model.dto.UsersDto;
 import com.flowcanvas.auth.model.form.LoginForm;
 import com.flowcanvas.auth.utill.EmailValidator;
 import com.flowcanvas.common.encrypt.Encrypt;
+import com.flowcanvas.common.socket.client.ClientServer;
 import com.flowcanvas.kanban.view.KanbanBoard;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class Login extends JFrame {
 	
@@ -35,6 +33,9 @@ public class Login extends JFrame {
 	private JPasswordField txt_login_password;
 	private UsersDto usersDto;
 
+	
+	private ClientServer clientServer;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -175,11 +176,34 @@ public class Login extends JFrame {
 
 		// db 연동 이메일, 비밀번호 확인 후 로그인
 		usersDto = usersDao.verifyLoginUser(loginForm);
+		if(usersDto != null) {
+			
+			// 사용자 ID를 클라이언트 서버 연결 메소드에 전달
+			clientServerConnection(usersDto.getUserId());
 		
-		KanbanBoard kanbanBoard = new KanbanBoard(usersDto);
-		kanbanBoard.setLocationRelativeTo(null);
-		kanbanBoard.setVisible(true);
+			KanbanBoard kanbanBoard = new KanbanBoard(usersDto, clientServer);
+			kanbanBoard.setLocationRelativeTo(null);
+			kanbanBoard.setVisible(true);
+			
+			dispose();
 		
-		dispose();
+		} else {
+			clientServer.closeConnection();
+			return;
+		}
+	}
+	
+	
+	// 클라이언트 서버 연결
+	private void clientServerConnection(int userId) {
+	    try {
+	        clientServer = new ClientServer("localhost", 5000);
+	        
+	        // sendLoginDetails 메소드가 성공적으로 로그인 처리를 확인한 경우
+	        clientServer.sendLoginDetails("loginUser", userId);
+
+	    } catch (IOException e) {
+	        JOptionPane.showMessageDialog(this, "서버 연결 실패: " + e.getMessage(), "연결 오류", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 }

@@ -1,23 +1,22 @@
 package com.flowcanvas.kanban.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.flowcanvas.common.socket.client.ClientServer;
 import com.flowcanvas.kanban.dao.KanbanCardDao;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Font;
 
 
 public class KanbanCardPart extends JPanel {
@@ -31,14 +30,20 @@ public class KanbanCardPart extends JPanel {
 	private int kanbanColumnId;
 	
 	
+	private ClientServer clientServer;
+	private int projectId;
+	
+	
 	public KanbanCardPart(
 			int kanbanColumnId, int kanbanCardId, String kanbanCardName, 
-			int userId, String nickName, int loginUserId, String loginNickName, 
-			CallBack callBack) {
+			int userId, String nickName, int loginUserId, String loginNickName,
+			ClientServer clientServer, int projectId, CallBack callBack) {
 
 		this.callBack = callBack;
 		this.kanbanCardDao = new KanbanCardDao();
 		this.kanbanColumnId = kanbanColumnId;
+		this.clientServer = clientServer;
+		this.projectId = projectId;
 		
 		
 		// 컴포넌트 생성
@@ -121,7 +126,8 @@ public class KanbanCardPart extends JPanel {
 		btn_card_name.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				KanbanCard kanbanCard = new KanbanCard(kanbanCardId, loginUserId, loginNickName);
+				KanbanCard kanbanCard = new KanbanCard(kanbanCardId, loginUserId
+						, loginNickName, clientServer, projectId);
 		    	
 		    	kanbanCard.setLocationRelativeTo(null);
 		    	kanbanCard.setVisible(true);
