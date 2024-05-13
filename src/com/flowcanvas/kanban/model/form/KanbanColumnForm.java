@@ -5,9 +5,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProjectsMergeForm {
+public class KanbanColumnForm {
 
+	private int kanbanColumnId;
 	private int projectId;
-	private int userId;
-	private String projectName;
+	private String kanbanColumnName;
+	private char useFlag;
 }

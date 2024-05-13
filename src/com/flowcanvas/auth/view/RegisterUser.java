@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -17,15 +19,19 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.flowcanvas.auth.dao.UsersDao;
-import com.flowcanvas.auth.form.RegistForm;
+import com.flowcanvas.auth.model.form.RegistForm;
+import com.flowcanvas.auth.utill.EmailValidator;
+import com.flowcanvas.common.encrypt.Encrypt;
+
+import javax.swing.JPasswordField;
 
 public class RegisterUser extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txt_register_email;
-	private JTextField txt_register_password;
 	private JTextField txt_register_nickname;
 	
 	private final UsersDao usersDao;
+	private JPasswordField txt_register_password;
 
 	/**
 	 * Create the dialog.
@@ -64,14 +70,6 @@ public class RegisterUser extends JDialog {
 			lbl_registeruser_password.setFont(new Font("D2Coding", Font.PLAIN, 12));
 			contentPanel.add(lbl_registeruser_password);
 		}
-		{
-			txt_register_password = new JTextField();
-			txt_register_password.setBounds(119, 54, 286, 20);
-			txt_register_password.setPreferredSize(new Dimension(300, 20));
-			txt_register_password.setFont(new Font("D2Coding", Font.PLAIN, 12));
-			txt_register_password.setColumns(10);
-			contentPanel.add(txt_register_password);
-		}
 		
 		txt_register_nickname = new JTextField();
 		txt_register_nickname.setPreferredSize(new Dimension(300, 20));
@@ -87,6 +85,12 @@ public class RegisterUser extends JDialog {
 		lbl_registeruser_nickname.setBounds(12, 82, 95, 20);
 		contentPanel.add(lbl_registeruser_nickname);
 		{
+			txt_register_password = new JPasswordField();
+			txt_register_password.setFont(new Font("D2Coding", Font.PLAIN, 12));
+			txt_register_password.setBounds(119, 54, 286, 20);
+			contentPanel.add(txt_register_password);
+		}
+		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
@@ -94,16 +98,28 @@ public class RegisterUser extends JDialog {
 				JButton okButton = new JButton("등록");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						
+						// 이메일 유효성 검사
+						if (!EmailValidator.isValidEmail(txt_register_email.getText())) {
+							JOptionPane.showMessageDialog(RegisterUser.this, "이메일 형식을 확인해 주세요.", "입력 오류",
+									JOptionPane.WARNING_MESSAGE);
+							return;
+				        }
+
+						// 패스워드 암호화
+						String passwordHash =
+								Encrypt.generateHash(txt_register_password.getPassword());
+						
 						// 회원 저장
 						RegistForm insUserDto = RegistForm.builder()
 								.email(txt_register_email.getText())
-								.password(txt_register_password.getText())
+								.password(passwordHash)
 								.nickName(txt_register_nickname.getText())
 								.build();
 						
 						String message = usersDao.insUsers(insUserDto);
 						JOptionPane.showMessageDialog(null, message,
-								"메시지", JOptionPane.INFORMATION_MESSAGE);
+								"메시지", JOptionPane.WARNING_MESSAGE);
 						
 						if(message.equals("회원가입 되었습니다.")) {
 							dispose();

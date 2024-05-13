@@ -17,6 +17,7 @@ public class ProjectsDao {
 
 	private ResultSet rs;
 
+	
 	// 프로젝트 조회
 	public List<ProjectsDto> selProjets(int userId) {
 
@@ -41,6 +42,7 @@ public class ProjectsDao {
 
 				projectsList.add(selProject);
 			}
+			
 			return projectsList;
 			
 		} catch (SQLException e) {
@@ -67,6 +69,7 @@ public class ProjectsDao {
 	}
 	
 	
+	// 프로젝트 삭제
 	public void delProject(int projectId) {
 		
 		try (Connection conn = DBConnection.getConnection();

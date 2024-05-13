@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProjectsDto {
-
+public class KanbanColumnDto {
+	private int kanbanColumnId;
 	private int projectId;
-	private int userId;
-	private String projectName;
-	private String projectJoinCode;
+	private String kanbanColumnName;
+	private char useFlag;
+	
 }

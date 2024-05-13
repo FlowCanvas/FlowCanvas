@@ -5,9 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProjectsMergeForm {
-
-	private int projectId;
-	private int userId;
-	private String projectName;
+public class FeedBackForm {
+	
+	String content;
 }
