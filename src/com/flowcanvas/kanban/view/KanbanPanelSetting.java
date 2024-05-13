@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -16,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.MatteBorder;
 
+import com.flowcanvas.common.socket.client.ClientServer;
 import com.flowcanvas.kanban.dao.KanbanColumnDao;
 import com.flowcanvas.kanban.model.dto.KanbanColumnDto;
 
@@ -31,7 +33,11 @@ public class KanbanPanelSetting extends JPanel {
 	private JPanel kanban_view_panel;
 	
 	
-	public KanbanPanelSetting(int projectListUserId, int loginUserId, String loginNickName, int projectId) {
+	private ClientServer clientServer;
+	
+	
+	public KanbanPanelSetting(int projectListUserId, int loginUserId, String loginNickName
+			 , int projectId, ClientServer clientServer) {
 		
 		setBorder(new MatteBorder(3, 3, 3, 3, (Color) new Color(200, 221, 242)));
 		
@@ -40,6 +46,7 @@ public class KanbanPanelSetting extends JPanel {
 		this.loginNickName = loginNickName;
 		this.projectId = projectId;
 		this.kanbanColumnDao = new KanbanColumnDao();
+		this.clientServer = clientServer;
 		
 		// 화면 GUI
 		initGUI();
@@ -49,8 +56,10 @@ public class KanbanPanelSetting extends JPanel {
 	}
 	
 	
-	// 화면 GUI
-	private void initGUI() {
+		// 화면 GUI
+	   private void initGUI() {
+	      
+        clientServer.kanbanColumnSetting(this, projectId);
 		setLayout(new BorderLayout(0, 0));
 		
 		
@@ -81,22 +90,36 @@ public class KanbanPanelSetting extends JPanel {
 			
 			// 칸반 컬럼 설정
 			private void settingKanbanCol() {
-				KanbanColSettingDialog colSettingDialog =
-						new KanbanColSettingDialog(projectId, new KanbanColSettingDialog.Callback() {
-							
+				KanbanColSettingDialog colSettingDialog = new KanbanColSettingDialog(projectId,
+						new KanbanColSettingDialog.Callback() {
+
 							@Override
 							public void onColumnsUpdated() {
 								getKanbanColList(projectId, "main");
+
+								try {
+									clientServer.sendMessage("kanbanColumn:" + projectId);
+
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
 							}
 						});
-				
+
 				colSettingDialog.setVisible(true);
 				colSettingDialog.setLocationRelativeTo(null);
 			}
 
 			// 사용자 초대
 			private void usersInvite() {
-				
+				try {
+			        UserInviteProjectDialog inviteProjectDialog =
+			        		new UserInviteProjectDialog(projectId, clientServer);
+			        inviteProjectDialog.setLocationRelativeTo(KanbanPanelSetting.this); // 부모 컴포넌트 설정
+			        inviteProjectDialog.setVisible(true);
+			    } catch (Exception e) {
+			        e.printStackTrace(); // 예외 발생시 콘솔에 출력
+			    }
 			}
 		});
 		
@@ -121,7 +144,7 @@ public class KanbanPanelSetting extends JPanel {
 	}
 	
 	// 칸반 컬럼 조회
-	private void getKanbanColList(int projectId, String uiSelected) {
+	public void getKanbanColList(int projectId, String uiSelected) {
 		// kanban_view_panel 위에 올려져있는 컨트롤 삭제
 		kanban_view_panel.removeAll();
 		
@@ -131,9 +154,9 @@ public class KanbanPanelSetting extends JPanel {
 		for (KanbanColumnDto dto : kanbanColumnDtoList) {
 			
 			KanbanColumnPart kanbanColumnPart =
-					new KanbanColumnPart(kanban_view_panel,
-							dto.getKanbanColumnId(), dto.getKanbanColumnName()
-							, loginUserId, loginNickName);
+		               new KanbanColumnPart(kanban_view_panel, projectId,
+		                     dto.getKanbanColumnId(), dto.getKanbanColumnName()
+		                     , loginUserId, loginNickName, clientServer);
 		
 			kanban_view_panel.add(kanbanColumnPart);
 
