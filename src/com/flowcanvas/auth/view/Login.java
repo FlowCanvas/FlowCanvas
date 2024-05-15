@@ -187,9 +187,6 @@ public class Login extends JFrame {
 			
 			dispose();
 		
-		} else {
-			clientServer.closeConnection();
-			return;
 		}
 	}
 	

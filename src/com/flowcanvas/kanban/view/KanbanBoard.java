@@ -92,7 +92,7 @@ public class KanbanBoard extends JFrame {
       JPanel pnl_user = new JPanel();
       pnl_main_top.add(pnl_user, BorderLayout.WEST);
       pnl_user.setLayout(new GridLayout(0, 1, 0, 0));
-      pnl_user.setPreferredSize(new Dimension(200, pnl_main_top.getHeight()));
+      pnl_user.setPreferredSize(new Dimension(500, pnl_main_top.getHeight()));
    
       
       JLabel lbl_user_email = new JLabel("이메일\t : " + usersDto.getEmail());
